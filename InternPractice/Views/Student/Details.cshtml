@@ -1,0 +1,23 @@
+﻿@model InternPractice.Models.Student
+
+@{
+    ViewData["Title"] = "Student Details";
+}
+
+<h2>Student Details</h2>
+
+<div class="card" style="width: 30rem;">
+    <div class="card-body">
+        <h5 class="card-title">@Model.FullName</h5>
+        <h6 class="card-subtitle mb-2 text-muted">@Model.CourseName</h6>
+        <hr />
+        <p class="card-text"><strong>Email:</strong> @Model.Email</p>
+        <p class="card-text"><strong>Age:</strong> @Model.Age</p>
+        <p class="card-text"><strong>Enrollment Date:</strong> @Model.EnrollmentDate.ToShortDateString()</p>
+        
+        <div class="mt-4">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
+</div>
