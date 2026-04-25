@@ -13,29 +13,49 @@ namespace InternPractice.Data
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
-            string[] roleNames = { "Admin", "Viewer" }; // Task A3.2: Admin and Viewer roles 
+            // 1. Ensure the roles exist in the new SQLite database
+            string[] roleNames = { "Admin", "Viewer" };
 
             foreach (var roleName in roleNames)
             {
                 var roleExist = await roleManager.RoleExistsAsync(roleName);
                 if (!roleExist)
                 {
-                     
                     await roleManager.CreateAsync(new IdentityRole(roleName));
                 }
             }
 
-            var user = new IdentityUser
+            // 2. PROMOTE YOUR PERSONAL ACCOUNT TO ADMIN
+            // This checks if you have already registered through the website
+            var personalAccount = await userManager.FindByEmailAsync("sidra.chatta95@gmail.com");
+            if (personalAccount != null)
             {
-                UserName = "admin@intern.com",
-                Email = "admin@intern.com",
-                EmailConfirmed = true
-            };
-            var createPowerUser = await userManager.CreateAsync(user, "Admin@123");
-            if (createPowerUser.Succeeded)
+                var isInRole = await userManager.IsInRoleAsync(personalAccount, "Admin");
+                if (!isInRole)
+                {
+                    await userManager.AddToRoleAsync(personalAccount, "Admin");
+                }
+            }
+
+            // 3. OPTIONAL: Create the default fallback admin
+            var defaultAdminEmail = "admin@intern.com";
+            var defaultAdmin = await userManager.FindByEmailAsync(defaultAdminEmail);
+
+            if (defaultAdmin == null)
             {
-                await userManager.AddToRoleAsync(user, "Admin");
+                var user = new IdentityUser
+                {
+                    UserName = defaultAdminEmail,
+                    Email = defaultAdminEmail,
+                    EmailConfirmed = true
+                };
+
+                var createPowerUser = await userManager.CreateAsync(user, "Admin@123");
+                if (createPowerUser.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(user, "Admin");
+                }
             }
         }
     }
-    }
+}
