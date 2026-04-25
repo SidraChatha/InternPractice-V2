@@ -25,23 +25,17 @@ namespace InternPractice.Data
                 }
             }
 
-            // Optional: Create a default Admin user so you can test immediately
-            var adminUser = await userManager.FindByEmailAsync("admin@intern.com");
-            if (adminUser == null)
+            var user = new IdentityUser
             {
-                var user = new IdentityUser
-                {
-                    UserName = "admin@intern.com",
-                    Email = "admin@intern.com",
-                    EmailConfirmed = true
-                };
-
-                var createPowerUser = await userManager.CreateAsync(user, "Admin@123");
-                if (createPowerUser.Succeeded)
-                {
-                    await userManager.AddToRoleAsync(user, "Admin");
-                }
+                UserName = "admin@intern.com",
+                Email = "admin@intern.com",
+                EmailConfirmed = true
+            };
+            var createPowerUser = await userManager.CreateAsync(user, "Admin@123");
+            if (createPowerUser.Succeeded)
+            {
+                await userManager.AddToRoleAsync(user, "Admin");
             }
         }
     }
-}
+    }
