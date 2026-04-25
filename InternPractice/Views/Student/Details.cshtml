@@ -4,20 +4,41 @@
     ViewData["Title"] = "Student Details";
 }
 
-<h2>Student Details</h2>
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-info text-white">
+            <h4 class="mb-0">Student Profile</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3 text-muted">Full Name</dt>
+                <dd class="col-sm-9 fw-bold">@Html.DisplayFor(model => model.Name)</dd>
 
-<div class="card" style="width: 30rem;">
-    <div class="card-body">
-        <h5 class="card-title">@Model.FullName</h5>
-        <h6 class="card-subtitle mb-2 text-muted">@Model.CourseName</h6>
-        <hr />
-        <p class="card-text"><strong>Email:</strong> @Model.Email</p>
-        <p class="card-text"><strong>Age:</strong> @Model.Age</p>
-        <p class="card-text"><strong>Enrollment Date:</strong> @Model.EnrollmentDate.ToShortDateString()</p>
-        
-        <div class="mt-4">
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+                <dt class="col-sm-3 text-muted">Email Address</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Email)</dd>
+
+                <dt class="col-sm-3 text-muted">Current Course</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Course)</dd>
+
+                <dt class="col-sm-3 text-muted">Department</dt>
+                <dd class="col-sm-9">
+                    @if (Model.Department != null)
+                    {
+                        <span class="badge bg-primary">@Model.Department.Name</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">No Department Assigned</span>
+                    }
+                </dd>
+            </dl>
+        </div>
+        <div class="card-footer bg-light d-flex justify-content-between">
             <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning">Edit Student</a>
+            }
         </div>
     </div>
 </div>

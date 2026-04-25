@@ -2,7 +2,48 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome Sidra</h1>
-    <p>Today is @DateTime.Now.ToString("D") </p>
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-primary">Welcome, Sidra</h1>
+        <p class="lead text-muted">InternPractice Management Portal</p>
+        <div class="badge bg-light text-dark border p-2">
+            <i class="bi bi-calendar3"></i> @DateTime.Now.ToString("D")
+        </div>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-5">
+            <div class="card h-100 shadow-sm border-0 hover-shadow">
+                <div class="card-body text-center p-5">
+                    <div class="display-5 text-primary mb-3">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <h3 class="card-title">Students</h3>
+                    <p class="card-text text-muted">View, add, and manage student records and enrollments.</p>
+                    <a asp-controller="Student" asp-action="Index" class="btn btn-primary btn-lg w-100">Manage Students</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center p-5">
+                    <div class="display-5 text-success mb-3">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <h3 class="card-title">Departments</h3>
+                    <p class="card-text text-muted">Organize academic departments and faculty units.</p>
+                    <a asp-controller="Departments" asp-action="Index" class="btn btn-success btn-lg w-100">Manage Departments</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    .hover-shadow:hover {
+        transform: translateY(-5px);
+        transition: 0.3s;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+</style>

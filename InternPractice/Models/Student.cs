@@ -1,32 +1,33 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace InternPractice.Models
 {
     public class Student
     {
-        [Key]
+        // Primary Key
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Full Name is required")]
+        [Required(ErrorMessage = "Please enter the student's name")]
         [StringLength(100)]
-        [Display(Name = "Full Name")]
-        public string FullName { get; set; }
+        public string Name { get; set; }
 
         [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Invalid email format")]
+        [EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string Email { get; set; }
 
-        [Required]
-        [Range(16, 60, ErrorMessage = "Age must be between 16 and 60")]
-        public int Age { get; set; }
+        [Required(ErrorMessage = "Please specify the course")]
+        public string Course { get; set; }
 
-        [Required]
-        [StringLength(150)]
-        [Display(Name = "Course Name")]
-        public string CourseName { get; set; }
+        // --- Module C: Relationship with Department ---
 
-        [DataType(DataType.Date)]
-        [Display(Name = "Enrollment Date")]
-        public DateTime EnrollmentDate { get; set; } = DateTime.Today;
+        // Foreign Key: This stores the ID of the Department
+        [Required(ErrorMessage = "Please select a department")]
+        [Display(Name = "Department")]
+        public int DepartmentId { get; set; }
+
+        // Navigation Property: This allows us to access Department.Name
+        [ForeignKey("DepartmentId")]
+        public virtual Department? Department { get; set; }
     }
 }

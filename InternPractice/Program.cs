@@ -1,32 +1,84 @@
-using Microsoft.EntityFrameworkCore;
 using InternPractice.Data;
+using InternPractice.Hubs;
+using InternPractice.Services;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Add services to the container (Dependency Injection)
-builder.Services.AddControllersWithViews();
-
+// --- 1. DATABASE CONFIGURATION ---
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(connectionString));
+
+// --- 2. IDENTITY SERVICES ---
+// Task A1.3: Password and Sign-in policies
+builder.Services.AddDefaultIdentity<IdentityUser>(options => {
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 6; // Fixed from 'Length' to 'RequiredLength'
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+    options.SignIn.RequireConfirmedAccount = false;
+})
+.AddRoles<IdentityRole>() // Task A3.2: Enable Roles
+.AddEntityFrameworkStores<ApplicationDbContext>();
+
+// --- 3. API & MVC SERVICES ---
+builder.Services.AddControllersWithViews(); // For Web Pages
+builder.Services.AddControllers(); // Task B1.1: For API Controllers
+builder.Services.AddSignalR();
+builder.Services.AddScoped<StudentService>();
+
+// --- 4. SWAGGER / API DOCUMENTATION ---
+// Task B1.5: Configure Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// 3. Configure the HTTP request pipeline (Middleware)
-if (!app.Environment.IsDevelopment())
+// --- 5. MIDDLEWARE PIPELINE ---
+if (app.Environment.IsDevelopment())
+{
+    // Task B1.5: Enable Swagger UI in development mode
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+else
+{
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios.
     app.UseHsts();
+}
 
 app.UseHttpsRedirection();
-app.UseStaticFiles(); // Allows access to wwwroot (CSS, JS, Images) [cite: 22]
+app.UseStaticFiles();
 
 app.UseRouting();
 
+// IMPORTANT: Authentication must come before Authorization
+app.UseAuthentication();
 app.UseAuthorization();
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        await SeedData.Initialize(services);
+    }
+    catch (Exception)
+    {
+        // Log errors here if seeding fails
+    }
+}
 
+// --- 7. ROUTES ---
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapRazorPages(); // Required for Identity UI
+app.MapControllers(); // Task B1.1: Maps the API routes
+app.MapHub<NotificationHub>("/hubs/notifications");
 
 app.Run();
