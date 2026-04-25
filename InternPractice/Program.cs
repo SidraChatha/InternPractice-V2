@@ -9,23 +9,23 @@ var builder = WebApplication.CreateBuilder(args);
 // --- 1. DATABASE CONFIGURATION ---
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // --- 2. IDENTITY SERVICES ---
 // Task A1.3: Password and Sign-in policies
 builder.Services.AddDefaultIdentity<IdentityUser>(options => {
     options.Password.RequireDigit = true;
-    options.Password.RequiredLength = 6; // Fixed from 'Length' to 'RequiredLength'
+    options.Password.RequiredLength = 6; 
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireUppercase = true;
     options.Password.RequireLowercase = true;
     options.SignIn.RequireConfirmedAccount = false;
 })
-.AddRoles<IdentityRole>() // Task A3.2: Enable Roles
+.AddRoles<IdentityRole>() 
 .AddEntityFrameworkStores<ApplicationDbContext>();
 
 // --- 3. API & MVC SERVICES ---
-builder.Services.AddControllersWithViews(); // For Web Pages
+builder.Services.AddControllersWithViews(); 
 builder.Services.AddControllers(); // Task B1.1: For API Controllers
 builder.Services.AddSignalR();
 builder.Services.AddScoped<StudentService>();
