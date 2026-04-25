@@ -7,9 +7,9 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // --- 1. DATABASE CONFIGURATION ---
-// We use UseSqlite for deployment stability on Railway
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(connectionString));
 
 // --- 2. IDENTITY SERVICES ---
 builder.Services.AddDefaultIdentity<IdentityUser>(options => {
@@ -35,18 +35,22 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// --- 5. AUTOMATIC DATABASE SETUP (CRITICAL ORDER) ---
-// We move this BEFORE seeding or running the app
+// --- 5. AUTOMATIC DATABASE SETUP ---
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
-        // 1. Create the tables first
-        context.Database.Migrate();
 
-        // 2. Then seed the data (Admin users, etc.)
+        // This ensures the .db file and all tables (like AspNetUsers) are created
+        context.Database.EnsureCreated();
+
+        if (context.Database.GetPendingMigrations().Any())
+        {
+            context.Database.Migrate();
+        }
+
         await SeedData.Initialize(services);
     }
     catch (Exception ex)
@@ -70,7 +74,7 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseRouting();
+app.UseRouting(); // Fixed: Removed 'base.'
 
 app.UseAuthentication();
 app.UseAuthorization();
