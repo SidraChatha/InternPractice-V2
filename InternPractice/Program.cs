@@ -1,5 +1,6 @@
 using InternPractice.Data;
 using InternPractice.Hubs;
+using InternPractice.Repositories;
 using InternPractice.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -29,9 +30,11 @@ builder.Services.AddControllers();
 builder.Services.AddSignalR();
 builder.Services.AddScoped<StudentService>();
 
-// --- 4. SWAGGER / API DOCUMENTATION ---
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<ICourseService, CourseService>();
 
 var app = builder.Build();
 

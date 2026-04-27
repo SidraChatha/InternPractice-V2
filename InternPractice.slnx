@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="InternPractice.Tests/InternPractice.Tests.csproj" Id="f529263a-3ee9-4f70-98a4-3865ff9517a2" />
   <Project Path="InternPractice/InternPractice.csproj" />
 </Solution>
